@@ -1,0 +1,43 @@
+{
+  "name": "req-vscode",
+  "displayName": "req-lang",
+  "description": "Language support for the req",
+  "version": "0.0.1",
+  "author": "Sami Dahoux <sami@qitab.io>",
+  "license": "UNLICENSED",
+  "publisher": "Qitab",
+  "engines": {
+    "vscode": "^1.78.1"
+  },
+  "scripts": {
+    "grammars": "node scripts/build.js"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "contributes": {
+    "languages": [
+      {
+        "id": "req",
+        "aliases": [
+          "req",
+          "req"
+        ],
+        "extensions": [
+          ".req"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "req",
+        "scopeName": "source.req",
+        "path": "./syntaxes/req.tmLanguage.json"
+      }
+    ]
+  },
+  "devDependencies": {
+    "js-yaml": "^4.1.1"
+  }
+}
