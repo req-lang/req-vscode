@@ -4,7 +4,7 @@
   "description": "Language support for the req",
   "version": "0.0.1",
   "author": "Sami Dahoux <sami@qitab.io>",
-  "license": "UNLICENSED",
+  "license": "See LICENSE",
   "publisher": "Qitab",
   "engines": {
     "vscode": "^1.78.1"
