@@ -35,9 +35,56 @@
         "scopeName": "source.req",
         "path": "./syntaxes/req.tmLanguage.json"
       }
-    ]
+    ],
+    "commands": [
+      {
+        "command": "req.restartServer",
+        "title": "req: Restart Language Server"
+      }
+    ],
+    "configuration": {
+      "title": "req",
+      "properties": {
+        "req.lsp.mode": {
+          "type": "string",
+          "enum": [
+            "binary",
+            "cargo"
+          ],
+          "default": "binary",
+          "markdownDescription": "How to start the language server. `binary` runs `req.lsp.path` (from PATH by default). `cargo` runs `cargo run` on the reqlsp crate (debug build) for server development."
+        },
+        "req.lsp.path": {
+          "type": "string",
+          "default": "req-lsp",
+          "markdownDescription": "Server executable used when `req.lsp.mode` is `binary`."
+        },
+        "req.lsp.cargoManifestPath": {
+          "type": "string",
+          "default": "",
+          "markdownDescription": "Absolute path to the reqlsp `Cargo.toml`. Required when `req.lsp.mode` is `cargo`."
+        },
+        "req.trace.server": {
+          "type": "string",
+          "enum": [
+            "off",
+            "messages",
+            "verbose"
+          ],
+          "default": "off",
+          "description": "Traces the LSP communication in the 'req Language Server' output channel."
+        }
+      }
+    }
   },
   "devDependencies": {
     "js-yaml": "^4.1.1"
-  }
+  },
+  "dependencies": {
+    "vscode-languageclient": "^8.1.0"
+  },
+  "main": "./extension.js",
+  "activationEvents": [
+    "onLanguage:req"
+  ]
 }
