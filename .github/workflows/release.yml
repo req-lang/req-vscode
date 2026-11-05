@@ -25,7 +25,7 @@ jobs:
         run: npm run grammars
 
       - name: Package extension
-        run: npx vsce package --no-dependencies --out req-vscode.vsix
+        run: npx vsce package --out req-vscode.vsix
 
       - name: Upload vsix to GitHub release
         uses: softprops/action-gh-release@v2
