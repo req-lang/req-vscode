@@ -45,24 +45,10 @@
     "configuration": {
       "title": "req",
       "properties": {
-        "req.lsp.mode": {
-          "type": "string",
-          "enum": [
-            "binary",
-            "cargo"
-          ],
-          "default": "binary",
-          "markdownDescription": "How to start the language server. `binary` runs `req.lsp.path` (from PATH by default). `cargo` runs `cargo run` on the reqlsp crate (debug build) for server development."
-        },
         "req.lsp.path": {
           "type": "string",
-          "default": "req-lsp",
-          "markdownDescription": "Server executable used when `req.lsp.mode` is `binary`."
-        },
-        "req.lsp.cargoManifestPath": {
-          "type": "string",
-          "default": "",
-          "markdownDescription": "Absolute path to the reqlsp `Cargo.toml`. Required when `req.lsp.mode` is `cargo`."
+          "default": "reqlsp",
+          "markdownDescription": "Language server executable. Looked up in `PATH` unless an absolute path is given."
         },
         "req.trace.server": {
           "type": "string",

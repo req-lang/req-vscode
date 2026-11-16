@@ -23,32 +23,12 @@ const { LanguageClient } = require("vscode-languageclient/node");
 let client;
 
 /**
- * Builds the command used to spawn the language server from the `req.lsp.*` settings.
- *
- * - `binary`: runs `req.lsp.path` (default `req-lsp`, looked up in PATH)
- * - `cargo`: runs `cargo run` on the reqlsp crate (debug build), for developing the server
+ * Builds the command used to spawn the language server from `req.lsp.path`
+ * (default `reqlsp`, looked up in PATH).
  */
 function serverOptions() {
   const config = vscode.workspace.getConfiguration("req.lsp");
-  const mode = config.get("mode", "binary");
-
-  if (mode === "cargo") {
-    const manifest = config.get("cargoManifestPath", "");
-    if (!manifest) {
-      throw new Error(
-        "req.lsp.cargoManifestPath must be set when req.lsp.mode is 'cargo'",
-      );
-    }
-    // --quiet: cargo's own output goes to stderr anyway, but keep the log clean.
-    // stdout MUST only carry LSP messages.
-    return {
-      command: "cargo",
-      args: ["run", "--quiet", "--manifest-path", manifest, "--bin", "reqlsp"],
-      options: { env: { ...process.env, RUST_BACKTRACE: "1" } },
-    };
-  }
-
-  return { command: config.get("path", "req-lsp"), args: [] };
+  return { command: config.get("path", "reqlsp"), args: [] };
 }
 
 async function startClient() {

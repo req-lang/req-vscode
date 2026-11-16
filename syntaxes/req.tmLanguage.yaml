@@ -7,88 +7,122 @@ variables:
   label: "[_[:alpha:]][_[:alnum:]]*"
 
 patterns:
-  - include: "#informal"
-  - include: "#package"
-  - include: "#tag"
+  - include: "#entities"
 
 repository:
-  part:
-    begin: \b(part)\s+({{label}})
-    end: \b(part)\n
-    beginCaptures:
-      1:
-        name: storage.type.req
-      2:
-        name: entity.name.section.req
-    endCaptures:
-      1:
-        name: keyword.other.req
-
+  entities:
     patterns:
       - include: "#informal"
-      - include: "#part"
-      - include: "#attribute"
       - include: "#tag"
-
-  attribute:
-    match: \b(let)\s+({{label}})\s+(in|is)\s+({{label}})(\s+(\[.*\]))?
-    captures:
-      1:
-        name: keyword.other.req
-      2:
-        name: entity.name.req
-      3:
-        name: keyword.other.req
-      4:
-        name: entity.name.type.req
-      5:
-        name: entity.name.type.req
-      6:
-        name: constant.language.req
+      - include: "#import"
+      - include: "#package"
+      - include: "#part"
+      - include: "#requirement"
+      - include: "#type"
+      - include: "#attribute"
 
   package:
     begin: \b(package)\s+({{label}})
-    end: \b(package)\n
+    end: \b(package)\s*$
     beginCaptures:
       1:
         name: storage.type.req
       2:
-        name: entity.name.section.req
+        name: entity.name.namespace.req
     endCaptures:
       1:
         name: keyword.other.req
     patterns:
-      - include: "#informal"
-      - include: "#part"
-      - include: "#requirement"
-      - include: "#package"
-      - include: "#tag"
+      - include: "#entities"
+
+  part:
+    begin: \b(part)\s+({{label}})
+    end: \b(part)\s*$
+    beginCaptures:
+      1:
+        name: storage.type.req
+      2:
+        name: entity.name.type.class.req
+    endCaptures:
+      1:
+        name: keyword.other.req
+    patterns:
+      - include: "#entities"
 
   requirement:
     begin: \b(requirement)\s+({{label}})
-    end: \b(requirement)\n
+    end: \b(requirement)\s*$
     beginCaptures:
       1:
         name: storage.type.req
       2:
         name: entity.name.function.req
-
     endCaptures:
       1:
         name: keyword.other.req
-
     patterns:
-      - match: (refines|derives|specializes)
-        captures:
-          1:
-            name: storage.modifier.req
+      - match: \b(on|via|refines|specializes|derives|top|bottom)\b
+        name: storage.modifier.req
 
-      - match: (is)
+      - match: \b(is)\b
         name: keyword.other.req
 
-      - include: "#constraint"
       - include: "#informal"
-      - include: "#identifier"
+      - include: "#expression"
+
+  type:
+    begin: \b(type)\s+({{label}})\s+(has)\b
+    end: \b(type)\s*$
+    beginCaptures:
+      1:
+        name: storage.type.req
+      2:
+        name: entity.name.type.enum.req
+      3:
+        name: keyword.other.req
+    endCaptures:
+      1:
+        name: keyword.other.req
+    patterns:
+      - match: (\|)
+        name: punctuation.separator.req
+
+      - match: ({{label}})
+        name: variable.other.enummember.req
+
+  attribute:
+    begin: \b(let)\s+({{label}})\s+(in)\b
+    end: $
+    beginCaptures:
+      1:
+        name: storage.type.req
+      2:
+        name: variable.other.property.req
+      3:
+        name: keyword.other.req
+    patterns:
+      - include: "#unit"
+      - include: "#expression"
+
+  import:
+    begin: \b(import)\b
+    end: $
+    beginCaptures:
+      1:
+        name: keyword.control.import.req
+    patterns:
+      - include: "#path"
+
+  unit:
+    begin: (\\)
+    end: (\\)
+    beginCaptures:
+      1:
+        name: punctuation.definition.unit.req
+    endCaptures:
+      1:
+        name: punctuation.definition.unit.req
+    name: constant.other.unit.req
 
   tag:
     begin: (#)
@@ -129,6 +163,10 @@ repository:
         name: punctuation.separator.req
 
     patterns:
+      - include: "#path"
+
+  path:
+    patterns:
       - match: (::)
         captures:
           1:
@@ -138,96 +176,56 @@ repository:
           1:
             name: variable.name.req
 
-  constraint:
-    patterns:
-      - include: "#if"
-      - include: "#when"
-      - include: "#predicate"
-      - include: "#aggregation"
-      - include: "#expression"
-      - include: "#set_constructor"
-      - match: \b(\,)
-        name: punctuation.semi.req
-
-  if:
-    begin: \b(if)
-    end: \b(end)
-    beginCaptures:
-      1:
-        name: keyword.control.req
-    endCaptures:
-      1:
-        name: keyword.other.req
-    patterns:
-      - match: \b(then)
-        name: keyword.control.req
-
-      - match: \b(else)
-        name: keyword.control.req
-
-      - include: "#constraint"
-
-  when:
-    begin: \b(when)
-    end: \b(end)
-    beginCaptures:
-      1:
-        name: keyword.control.req
-    endCaptures:
-      1:
-        name: keyword.other.req
-    patterns:
-      - match: then
-        name: keyword.control.req
-
-      - match: \b(otherwise)
-        name: keyword.control.req
-
-      - include: "#constraint"
-
-  predicate:
-    begin: \b(exists|forall|select)
-    end: \b(end)
-    beginCaptures:
-      1:
-        name: keyword.control.req
-    endCaptures:
-      1:
-        name: keyword.other.req
-    patterns:
-      - match: (in)
-        name: keyword.operator.new.req
-
-      - match: (such|that)
-        name: keyword.control.req
-
-      - match: maximize|minimize
-        name: keyword.control.req
-
-      - include: "#constraint"
-
-  aggregation:
-    begin: \b(all|any)
-    end: \b(end)
-    beginCaptures:
-      1:
-        name: keyword.control.req
-    endCaptures:
-      1:
-        name: keyword.other.req
-    patterns:
-      - include: "#constraint"
-
   expression:
     patterns:
       - include: "#literal"
+      - include: "#when"
+      - include: "#aggregation"
+      - include: "#binding"
       - include: "#logical"
       - include: "#temporal"
-      - include: "#arithmetic"
-      - include: "#comparison"
       - include: "#set"
+      - include: "#comparison"
+      - include: "#arithmetic"
+      - include: "#brackets"
+      - include: "#set_constructor"
       - include: "#call"
-      - include: "#identifier"
+      - include: "#group"
+      - include: "#path"
+      - match: (,)
+        name: punctuation.separator.comma.req
+
+  when:
+    begin: \b(when)\b
+    end: \b(end)\b
+    beginCaptures:
+      1:
+        name: keyword.control.req
+    endCaptures:
+      1:
+        name: keyword.other.req
+    patterns:
+      - match: \b(then|otherwise)\b
+        name: keyword.control.req
+
+      - include: "#expression"
+
+  aggregation:
+    begin: \b(all|any|one|max|min|sum|prod|argmax|argmin|sup|inf|count|choose)\b
+    end: \b(end)\b
+    beginCaptures:
+      1:
+        name: keyword.control.req
+    endCaptures:
+      1:
+        name: keyword.other.req
+    patterns:
+      - include: "#expression"
+
+  binding:
+    patterns:
+      - match: \b(for|such|that)\b
+        name: keyword.control.req
 
   logical:
     patterns:
@@ -239,68 +237,75 @@ repository:
       - match: \b(always|eventually|rising|falling|previously|since)\b
         name: keyword.operator.temporal.req keyword.control.req
 
+  set:
+    patterns:
+      - match: \b(union|intersection|difference|complement|includes|in)\b
+        name: keyword.operator.set.req keyword.control.req
+
+  comparison:
+    patterns:
+      - match: (:=|°=)
+        name: keyword.operator.assignment.req
+
+      - match: \b(tol)\b
+        name: keyword.operator.tolerance.req
+
+      - match: (>=|<=|<>|=|<|>)
+        name: keyword.operator.comparison.req
+
   arithmetic:
     patterns:
       - match: (\+|-|\*|\/|%|\^|!)
         name: keyword.operator.arithmetic.req
 
-  comparison:
+  brackets:
     patterns:
-      - match: (=|/=|<|<=|>|>=)
-        name: keyword.operator.comparison.req
+      - match: (\[\[|\]\])
+        name: punctuation.definition.range.req
 
-  set:
-    patterns:
-      - match: \b(union|intersection|difference|includes|subset|in)\b
-        name: keyword.operator.set.sdl keyword.control.req
-
-  call:
-    patterns:
-      - begin: \b({{label}})\s*\(
-        end: \)
-        beginCaptures:
-          1:
-            name: entity.name.package.req
-        patterns:
-          - include: "#expression"
-
-  identifier:
-    begin: ({{label}})
-    end: ({{label}})?
-
-    beginCaptures:
-      1:
-        name: variable.name.req
-    endCaptures:
-      1:
-        name: variable.name.req
-
-    patterns:
-      - match: (::)
-        captures:
-          1:
-            name: keyword.operator.namespace.req
-      - match: ({{label}})
-        captures:
-          1:
-            name: variable.name.req
+      - match: (\[|\])
+        name: punctuation.definition.interval.req
 
   set_constructor:
-    begin: ({)
-    end: (})
+    begin: (\{)
+    end: (\})
+    beginCaptures:
+      1:
+        name: punctuation.definition.set.req
+    endCaptures:
+      1:
+        name: punctuation.definition.set.req
     patterns:
-      - include: "#constraint"
+      - include: "#expression"
+
+  call:
+    begin: \b({{label}})\s*\(
+    end: \)
+    beginCaptures:
+      1:
+        name: entity.name.function.call.req
+    patterns:
+      - include: "#expression"
+
+  group:
+    begin: (\()
+    end: (\))
+    beginCaptures:
+      1:
+        name: punctuation.section.group.req
+    endCaptures:
+      1:
+        name: punctuation.section.group.req
+    patterns:
+      - include: "#expression"
 
   literal:
     patterns:
-      - match: \b(true|false|undefined|inf|nan|real|integer|boolean)
+      - match: \b(true|false|undefined|infinity)\b
         name: constant.language.req
 
-      - match: \b(\d+(\.\d+)?(e[+-]?\d+)?)
+      - match: \b(real|integer|boolean)\b
+        name: support.type.req
+
+      - match: \b\d+(\.\d*)?([eE]\d+)?
         name: constant.numeric.req
-
-      - match: \b(\".*\")
-        name: string.quoted.double.req
-
-      - match: \b('.*')
-        name: string.quoted.single.req

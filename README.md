@@ -5,19 +5,17 @@ Language support VSCode plugin for the req language.
 ## Features
 
 * Syntax coloring for the req language
-* Language server integration (diagnostics, etc. as `req-lsp` implements them)
+* Language server integration (diagnostics, etc. as `reqlsp` implements them)
 
 ## Requirements
 
-The `req-lsp` executable available in your `PATH` (see Extension Settings to change this).
+The `reqlsp` executable available in your `PATH` (see Extension Settings to change this).
 
 ## Extension Settings
 
 | Setting | Default | Description |
 | --- | --- | --- |
-| `req.lsp.mode` | `binary` | `binary` runs `req.lsp.path`; `cargo` runs `cargo run` on the reqlsp crate (debug build) |
-| `req.lsp.path` | `req-lsp` | Server executable used in `binary` mode |
-| `req.lsp.cargoManifestPath` | `""` | Absolute path to reqlsp's `Cargo.toml`, required in `cargo` mode |
+| `req.lsp.path` | `reqlsp` | Language server executable (looked up in `PATH`) |
 | `req.trace.server` | `off` | `messages`/`verbose` traces LSP traffic in the *req Language Server* output channel |
 
 Command: `req: Restart Language Server` (also triggered automatically when `req.lsp.*` changes).
@@ -40,25 +38,20 @@ open the VSCode window with this project and use `Ctrl + Shift + F5`.
 
 ### Debugging the language server
 
-Install the dependencies once with `npm install`. Then, in the settings of the window
-the extension runs in (`F5` host), point the extension to the crate:
+Install the dependencies once with `npm install`. The extension runs `reqlsp` from `PATH`,
+so for development symlink the debug build once:
 
-```json
-{
-  "req.lsp.mode": "cargo",
-  "req.lsp.cargoManifestPath": "/absolute/path/to/req-mono/reqlsp/Cargo.toml"
-}
+```sh
+cargo build
+ln -sf "$PWD/target/debug/reqlsp" ~/.cargo/bin/reqlsp
 ```
 
-The server is then started with `cargo run --manifest-path ... --bin req-lsp`, so every
-`req: Restart Language Server` rebuilds it in debug mode. Server logs (`client.log_message`)
-and stderr appear in the *req Language Server* output channel; set `req.trace.server` to
-`verbose` to see the raw messages.
+After that, each `cargo build` updates the server; run `req: Restart Language Server` to load it.
+Server logs (`client.log_message`) and stderr appear in the *req Language Server* output channel;
+set `req.trace.server` to `verbose` to see the raw messages. To use a debugger, attach
+(e.g. CodeLLDB) to the running `reqlsp` process.
 
-To attach a native debugger instead, build with `cargo build` and use `binary` mode with
-`req.lsp.path` set to `.../target/debug/req-lsp`, then attach (e.g. CodeLLDB) to the process.
-
-For a release install, `cargo install --path reqlsp` puts `req-lsp` in `~/.cargo/bin`.
+For a release install, replace the symlink with `cargo install --path reqlsp`.
 
 ### Changing the grammar
 
