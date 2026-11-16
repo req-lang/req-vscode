@@ -2,7 +2,7 @@
   "name": "req-vscode",
   "displayName": "req-lang",
   "description": "Language support for the req",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "author": "Sami Dahoux <sami@qitab.io>",
   "license": "See LICENSE",
   "publisher": "Qitab",
